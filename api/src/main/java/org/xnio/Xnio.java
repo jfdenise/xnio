@@ -191,11 +191,16 @@ public abstract class Xnio {
      * @since 3.0
      */
     public static Xnio getInstance() {
-        return doGetInstance(null, doPrivileged(new PrivilegedAction<ServiceLoader<XnioProvider>>() {
-            public ServiceLoader<XnioProvider> run() {
-                return ServiceLoader.load(XnioProvider.class, Xnio.class.getClassLoader());
-            }
-        }));
+        System.out.println("GETTING XNIO INSTANCE");
+        if (Boolean.getBoolean("org.wildfly.graal")) {
+            return ServiceLoaderInitializer.getInstance();
+        } else {
+            return doGetInstance(null, doPrivileged(new PrivilegedAction<ServiceLoader<XnioProvider>>() {
+                public ServiceLoader<XnioProvider> run() {
+                    return ServiceLoader.load(XnioProvider.class, Xnio.class.getClassLoader());
+                }
+            }));
+        }
     }
 
     /**
@@ -572,7 +577,7 @@ public abstract class Xnio {
     protected static Closeable register(XnioProviderMXBean providerMXBean) {
         try {
             final ObjectName objectName = new ObjectName("org.xnio", ObjectProperties.properties(ObjectProperties.property("type", "Xnio"), ObjectProperties.property("provider", ObjectName.quote(providerMXBean.getName()))));
-            MBeanHolder.MBEAN_SERVER.registerMBean(providerMXBean, objectName);
+            //MBeanHolder.MBEAN_SERVER.registerMBean(providerMXBean, objectName);
             return new MBeanCloseable(objectName);
         } catch (Throwable ignored) {
             return IoUtils.nullCloseable();
@@ -588,7 +593,7 @@ public abstract class Xnio {
     protected static Closeable register(XnioWorkerMXBean workerMXBean) {
         try {
             final ObjectName objectName = new ObjectName("org.xnio", ObjectProperties.properties(ObjectProperties.property("type", "Xnio"), ObjectProperties.property("provider", ObjectName.quote(workerMXBean.getProviderName())), ObjectProperties.property("worker", ObjectName.quote(workerMXBean.getName()))));
-            MBeanHolder.MBEAN_SERVER.registerMBean(workerMXBean, objectName);
+            //MBeanHolder.MBEAN_SERVER.registerMBean(workerMXBean, objectName);
             return new MBeanCloseable(objectName);
         } catch (Throwable ignored) {
             return IoUtils.nullCloseable();
@@ -604,7 +609,7 @@ public abstract class Xnio {
     protected static Closeable register(XnioServerMXBean serverMXBean) {
         try {
             final ObjectName objectName = new ObjectName("org.xnio", ObjectProperties.properties(ObjectProperties.property("type", "Xnio"), ObjectProperties.property("provider", ObjectName.quote(serverMXBean.getProviderName())), ObjectProperties.property("worker", ObjectName.quote(serverMXBean.getWorkerName())), ObjectProperties.property("address", ObjectName.quote(serverMXBean.getBindAddress()))));
-            MBeanHolder.MBEAN_SERVER.registerMBean(serverMXBean, objectName);
+            //MBeanHolder.MBEAN_SERVER.registerMBean(serverMXBean, objectName);
             return new MBeanCloseable(objectName);
         } catch (Throwable ignored) {
             return IoUtils.nullCloseable();
@@ -621,7 +626,7 @@ public abstract class Xnio {
 
         public void close() {
             if (! getAndSet(true)) try {
-                MBeanHolder.MBEAN_SERVER.unregisterMBean(objectName);
+                //MBeanHolder.MBEAN_SERVER.unregisterMBean(objectName);
             } catch (Throwable ignored) {
             }
         }
