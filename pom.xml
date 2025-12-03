@@ -90,6 +90,7 @@
         <version.org.jboss.threads>2.3.6.Final</version.org.jboss.threads>
         <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
         <version.org.wildfly.client-config>1.0.1.Final</version.org.wildfly.client-config>
+        <version.org.wildfly.graal>1.0-SNAPSHOT</version.org.wildfly.graal>
         <version.bridger.plugin>1.6.Final</version.bridger.plugin>
         <version.junit>4.13.2</version.junit>
         <version.jmock>2.12.0</version.jmock>
@@ -175,6 +176,11 @@
                 <groupId>org.jboss.logmanager</groupId>
                 <artifactId>jboss-logmanager</artifactId>
                 <version>${version.org.jboss.logmanager.jboss-logmanager}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.wildfly.graal</groupId>
+              <artifactId>wildfly-graal-runtime</artifactId>
+              <version>${version.org.wildfly.graal}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

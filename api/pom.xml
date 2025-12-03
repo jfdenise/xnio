@@ -81,6 +81,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+          <groupId>org.wildfly.graal</groupId>
+          <artifactId>wildfly-graal-runtime</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

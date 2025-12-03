@@ -101,6 +101,11 @@
             <artifactId>byteman-install</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+          <groupId>org.wildfly.graal</groupId>
+          <artifactId>wildfly-graal-runtime</artifactId>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <resources>
