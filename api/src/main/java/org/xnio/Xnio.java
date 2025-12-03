@@ -65,9 +65,30 @@ import static org.xnio._private.Messages.msg;
 @SuppressWarnings("unused")
 public abstract class Xnio {
 
-    static final InetSocketAddress ANY_INET_ADDRESS = new InetSocketAddress(0);
-    static final LocalSocketAddress ANY_LOCAL_ADDRESS = new LocalSocketAddress("");
+    private static final InetSocketAddress ANY_INET_ADDRESS;
+    private static final LocalSocketAddress ANY_LOCAL_ADDRESS;
 
+    static {    
+        if(Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            ANY_INET_ADDRESS = null;
+            ANY_LOCAL_ADDRESS = null;
+        } else {
+            ANY_INET_ADDRESS = new InetSocketAddress(0);
+            ANY_LOCAL_ADDRESS = new LocalSocketAddress("");
+        }
+    }
+    static InetSocketAddress getAnyInetAddress() {
+        if(ANY_INET_ADDRESS == null) {
+            return new InetSocketAddress(0);
+        }
+        return ANY_INET_ADDRESS;
+    }
+    static LocalSocketAddress getAnyLocalAddress() {
+        if(ANY_LOCAL_ADDRESS == null) {
+            return new LocalSocketAddress("");
+        }
+        return ANY_LOCAL_ADDRESS;
+    }
     private static final EnumMap<FileAccess, OptionMap> FILE_ACCESS_OPTION_MAPS;
 
     private static final RuntimePermission ALLOW_BLOCKING_SETTING = new RuntimePermission("changeThreadBlockingSetting");
@@ -77,11 +98,15 @@ public abstract class Xnio {
         private static final MBeanServer MBEAN_SERVER;
 
         static {
-            MBEAN_SERVER = doPrivileged(new PrivilegedAction<MBeanServer>() {
-                public MBeanServer run() {
-                    return ManagementFactory.getPlatformMBeanServer();
-                }
-            });
+            if (Boolean.getBoolean("org.wildfly.graal.build.time")) {
+                MBEAN_SERVER = null;
+            } else {
+                MBEAN_SERVER = doPrivileged(new PrivilegedAction<MBeanServer>() {
+                    public MBeanServer run() {
+                        return ManagementFactory.getPlatformMBeanServer();
+                    }
+                });
+            }
         }
     }
 
@@ -570,6 +595,10 @@ public abstract class Xnio {
      * @return a handle which may be used to remove the registration
      */
     protected static Closeable register(XnioProviderMXBean providerMXBean) {
+        if (Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            return IoUtils.nullCloseable();
+        }
+
         try {
             final ObjectName objectName = new ObjectName("org.xnio", ObjectProperties.properties(ObjectProperties.property("type", "Xnio"), ObjectProperties.property("provider", ObjectName.quote(providerMXBean.getName()))));
             MBeanHolder.MBEAN_SERVER.registerMBean(providerMXBean, objectName);
@@ -586,6 +615,9 @@ public abstract class Xnio {
      * @return a handle which may be used to remove the registration
      */
     protected static Closeable register(XnioWorkerMXBean workerMXBean) {
+        if (Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            return IoUtils.nullCloseable();
+        }
         try {
             final ObjectName objectName = new ObjectName("org.xnio", ObjectProperties.properties(ObjectProperties.property("type", "Xnio"), ObjectProperties.property("provider", ObjectName.quote(workerMXBean.getProviderName())), ObjectProperties.property("worker", ObjectName.quote(workerMXBean.getName()))));
             MBeanHolder.MBEAN_SERVER.registerMBean(workerMXBean, objectName);
@@ -602,6 +634,9 @@ public abstract class Xnio {
      * @return a handle which may be used to remove the registration
      */
     protected static Closeable register(XnioServerMXBean serverMXBean) {
+        if (Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            return IoUtils.nullCloseable();
+        }
         try {
             final ObjectName objectName = new ObjectName("org.xnio", ObjectProperties.properties(ObjectProperties.property("type", "Xnio"), ObjectProperties.property("provider", ObjectName.quote(serverMXBean.getProviderName())), ObjectProperties.property("worker", ObjectName.quote(serverMXBean.getWorkerName())), ObjectProperties.property("address", ObjectName.quote(serverMXBean.getBindAddress()))));
             MBeanHolder.MBEAN_SERVER.registerMBean(serverMXBean, objectName);
