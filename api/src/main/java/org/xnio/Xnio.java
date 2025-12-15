@@ -192,15 +192,11 @@ public abstract class Xnio {
      */
     public static Xnio getInstance() {
         System.out.println("GETTING XNIO INSTANCE");
-        if (Boolean.getBoolean("org.wildfly.graal")) {
-            return ServiceLoaderInitializer.getInstance();
-        } else {
-            return doGetInstance(null, doPrivileged(new PrivilegedAction<ServiceLoader<XnioProvider>>() {
-                public ServiceLoader<XnioProvider> run() {
-                    return ServiceLoader.load(XnioProvider.class, Xnio.class.getClassLoader());
-                }
-            }));
-        }
+        return doGetInstance(null, doPrivileged(new PrivilegedAction<ServiceLoader<XnioProvider>>() {
+            public ServiceLoader<XnioProvider> run() {
+                return ServiceLoader.load(XnioProvider.class, Xnio.class.getClassLoader());
+            }
+        }));
     }
 
     /**
