@@ -191,7 +191,6 @@ public abstract class Xnio {
      * @since 3.0
      */
     public static Xnio getInstance() {
-        System.out.println("GETTING XNIO INSTANCE");
         return doGetInstance(null, doPrivileged(new PrivilegedAction<ServiceLoader<XnioProvider>>() {
             public ServiceLoader<XnioProvider> run() {
                 return ServiceLoader.load(XnioProvider.class, Xnio.class.getClassLoader());
