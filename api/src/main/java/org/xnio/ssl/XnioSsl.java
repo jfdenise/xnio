@@ -43,8 +43,21 @@ import org.xnio.channels.ConnectedSslStreamChannel;
 @SuppressWarnings("unused")
 public abstract class XnioSsl {
 
-    private static final InetSocketAddress ANY_INET_ADDRESS = new InetSocketAddress(0);
+    private static final InetSocketAddress ANY_INET_ADDRESS;
 
+    static {
+        if(Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            ANY_INET_ADDRESS = null;
+        } else {
+            ANY_INET_ADDRESS = new InetSocketAddress(0);
+        }
+    }
+    private static InetSocketAddress getAnyInetAddress() {
+        if(ANY_INET_ADDRESS == null) {
+            return new InetSocketAddress(0);
+        }
+        return ANY_INET_ADDRESS;
+    }
     /**
      * The corresponding XNIO instance.
      */
@@ -80,7 +93,7 @@ public abstract class XnioSsl {
      */
     @Deprecated
     public IoFuture<ConnectedSslStreamChannel> connectSsl(XnioWorker worker, InetSocketAddress destination, ChannelListener<? super ConnectedSslStreamChannel> openListener, OptionMap optionMap) {
-        return connectSsl(worker, ANY_INET_ADDRESS, destination, openListener, null, optionMap);
+        return connectSsl(worker, getAnyInetAddress(), destination, openListener, null, optionMap);
     }
 
     /**
@@ -95,7 +108,7 @@ public abstract class XnioSsl {
      */
     @Deprecated
     public IoFuture<ConnectedSslStreamChannel> connectSsl(final XnioWorker worker, final InetSocketAddress destination, final ChannelListener<? super ConnectedSslStreamChannel> openListener, final ChannelListener<? super BoundChannel> bindListener, final OptionMap optionMap) {
-        return connectSsl(worker, ANY_INET_ADDRESS, destination, openListener, bindListener, optionMap);
+        return connectSsl(worker, getAnyInetAddress(), destination, openListener, bindListener, optionMap);
     }
 
     /**
@@ -152,7 +165,7 @@ public abstract class XnioSsl {
      * @return the SSL connection
      */
     public IoFuture<SslConnection> openSslConnection(XnioIoThread ioThread, InetSocketAddress destination, ChannelListener<? super SslConnection> openListener, OptionMap optionMap) {
-        return openSslConnection(ioThread, ANY_INET_ADDRESS, destination, openListener, null, optionMap);
+        return openSslConnection(ioThread, getAnyInetAddress(), destination, openListener, null, optionMap);
     }
 
     /**
@@ -166,7 +179,7 @@ public abstract class XnioSsl {
      * @return the SSL connection
      */
     public IoFuture<SslConnection> openSslConnection(final XnioWorker worker, final InetSocketAddress destination, final ChannelListener<? super SslConnection> openListener, final ChannelListener<? super BoundChannel> bindListener, final OptionMap optionMap) {
-        return openSslConnection(worker, ANY_INET_ADDRESS, destination, openListener, bindListener, optionMap);
+        return openSslConnection(worker, getAnyInetAddress(), destination, openListener, bindListener, optionMap);
     }
 
     /**
@@ -180,7 +193,7 @@ public abstract class XnioSsl {
      * @return the SSL connection
      */
     public IoFuture<SslConnection> openSslConnection(final XnioIoThread ioThread, final InetSocketAddress destination, final ChannelListener<? super SslConnection> openListener, final ChannelListener<? super BoundChannel> bindListener, final OptionMap optionMap) {
-        return openSslConnection(ioThread, ANY_INET_ADDRESS, destination, openListener, bindListener, optionMap);
+        return openSslConnection(ioThread, getAnyInetAddress(), destination, openListener, bindListener, optionMap);
     }
 
     /**

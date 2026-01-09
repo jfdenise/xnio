@@ -204,7 +204,7 @@ public class XnioWorkerTestCase {
 
     @Test
     public void connectLocalStream() throws CancellationException, IOException {
-        checkConnectStream(new LocalSocketAddress("server for test"), Xnio.ANY_LOCAL_ADDRESS, XnioWorkerMock.LOCAL_CHANNEL_INFO);
+        checkConnectStream(new LocalSocketAddress("server for test"), Xnio.getAnyLocalAddress(), XnioWorkerMock.LOCAL_CHANNEL_INFO);
     }
 
     private void checkConnectStreamWithBindListener(SocketAddress socketAddress, SocketAddress localSocketAddress, String channelInfo) throws CancellationException, IOException {
@@ -235,7 +235,7 @@ public class XnioWorkerTestCase {
 
     @Test
     public void connectLocalStreamWithBindListener() throws CancellationException, IOException {
-        checkConnectStreamWithBindListener(new LocalSocketAddress("server for test"), Xnio.ANY_LOCAL_ADDRESS, XnioWorkerMock.LOCAL_CHANNEL_INFO);
+        checkConnectStreamWithBindListener(new LocalSocketAddress("server for test"), Xnio.getAnyLocalAddress(), XnioWorkerMock.LOCAL_CHANNEL_INFO);
     }
 
     @Test
@@ -421,7 +421,7 @@ public class XnioWorkerTestCase {
         //assertTrue(bindListener.isInvoked());
         // FIXME XNIO-192
         //assertSame(assembledChannel, bindListener.getChannel());
-        assertEquals(Xnio.ANY_LOCAL_ADDRESS, assembledChannel.getLocalAddress());
+        assertEquals(Xnio.getAnyLocalAddress(), assembledChannel.getLocalAddress());
         assertEquals(socketAddress, assembledChannel.getPeerAddress());
         assertEquals(800000, (int) assembledChannel.getOption(Options.WRITE_TIMEOUT));
 
@@ -448,7 +448,7 @@ public class XnioWorkerTestCase {
         //assertTrue(bindListener.isInvoked());
         // FIXME XNIO-192
         //assertSame(assembledChannel, bindListener.getChannel());
-        assertEquals(Xnio.ANY_LOCAL_ADDRESS, assembledChannel.getLocalAddress());
+        assertEquals(Xnio.getAnyLocalAddress(), assembledChannel.getLocalAddress());
         // FIXME bindAddress is ignored assertEquals(bindAddress, assembledChannel.getLocalAddress());
         assertEquals(socketAddress, assembledChannel.getPeerAddress());
         assertEquals(9000000l, (long) assembledChannel.getOption(Options.STACK_SIZE));

@@ -65,9 +65,30 @@ import static org.xnio._private.Messages.msg;
 @SuppressWarnings("unused")
 public abstract class Xnio {
 
-    static final InetSocketAddress ANY_INET_ADDRESS = new InetSocketAddress(0);
-    static final LocalSocketAddress ANY_LOCAL_ADDRESS = new LocalSocketAddress("");
+    private static final InetSocketAddress ANY_INET_ADDRESS;
+    private static final LocalSocketAddress ANY_LOCAL_ADDRESS;
 
+    static {    
+        if(Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            ANY_INET_ADDRESS = null;
+            ANY_LOCAL_ADDRESS = null;
+        } else {
+            ANY_INET_ADDRESS = new InetSocketAddress(0);
+            ANY_LOCAL_ADDRESS = new LocalSocketAddress("");
+        }
+    }
+    static InetSocketAddress getAnyInetAddress() {
+        if(ANY_INET_ADDRESS == null) {
+            return new InetSocketAddress(0);
+        }
+        return ANY_INET_ADDRESS;
+    }
+    static LocalSocketAddress getAnyLocalAddress() {
+        if(ANY_LOCAL_ADDRESS == null) {
+            return new LocalSocketAddress("");
+        }
+        return ANY_LOCAL_ADDRESS;
+    }
     private static final EnumMap<FileAccess, OptionMap> FILE_ACCESS_OPTION_MAPS;
 
     private static final RuntimePermission ALLOW_BLOCKING_SETTING = new RuntimePermission("changeThreadBlockingSetting");

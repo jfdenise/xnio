@@ -41,7 +41,20 @@ import static org.xnio._private.Messages.msg;
 @SuppressWarnings("unused")
 public abstract class XnioIoThread extends Thread implements XnioExecutor, XnioIoFactory {
 
-    private static final InetSocketAddress ANY_INET_ADDRESS = new InetSocketAddress(0);
+    private static final InetSocketAddress ANY_INET_ADDRESS;
+    static {    
+        if(Boolean.getBoolean("org.wildfly.graal.build.time")) {
+            ANY_INET_ADDRESS = null;
+        } else {
+            ANY_INET_ADDRESS = new InetSocketAddress(0);
+        }
+    }
+    static InetSocketAddress getAnyInetAddress() {
+        if(ANY_INET_ADDRESS == null) {
+            return new InetSocketAddress(0);
+        }
+        return ANY_INET_ADDRESS;
+    }
     private final XnioWorker worker;
     private final int number;
 
@@ -191,7 +204,7 @@ public abstract class XnioIoThread extends Thread implements XnioExecutor, XnioI
             throw msg.nullParameter("destination");
         }
         if (destination instanceof LocalSocketAddress) {
-            return openLocalMessageConnection(Xnio.ANY_LOCAL_ADDRESS, (LocalSocketAddress) destination, openListener, optionMap);
+            return openLocalMessageConnection(Xnio.getAnyLocalAddress(), (LocalSocketAddress) destination, openListener, optionMap);
         } else {
             throw msg.badSockType(destination.getClass());
         }
@@ -227,7 +240,7 @@ public abstract class XnioIoThread extends Thread implements XnioExecutor, XnioI
         if (destination instanceof InetSocketAddress) {
             return internalOpenTcpStreamConnection((InetSocketAddress) destination, openListener, null, optionMap);
         } else if (destination instanceof LocalSocketAddress) {
-            return openLocalStreamConnection(Xnio.ANY_LOCAL_ADDRESS, (LocalSocketAddress) destination, openListener, null, optionMap);
+            return openLocalStreamConnection(Xnio.getAnyLocalAddress(), (LocalSocketAddress) destination, openListener, null, optionMap);
         } else {
             throw msg.badSockType(destination.getClass());
         }
@@ -238,7 +251,7 @@ public abstract class XnioIoThread extends Thread implements XnioExecutor, XnioI
         if (destination instanceof InetSocketAddress) {
             return internalOpenTcpStreamConnection((InetSocketAddress) destination, openListener, bindListener, optionMap);
         } else if (destination instanceof LocalSocketAddress) {
-            return openLocalStreamConnection(Xnio.ANY_LOCAL_ADDRESS, (LocalSocketAddress) destination, openListener, bindListener, optionMap);
+            return openLocalStreamConnection(Xnio.getAnyLocalAddress(), (LocalSocketAddress) destination, openListener, bindListener, optionMap);
         } else {
             throw msg.badSockType(destination.getClass());
         }
@@ -263,7 +276,7 @@ public abstract class XnioIoThread extends Thread implements XnioExecutor, XnioI
             throw msg.mismatchSockType(bindAddress.getClass(), destination.getClass());
         }
         if (destination instanceof InetSocketAddress) {
-            final InetSocketAddress configuredAddress = ANY_INET_ADDRESS.equals(bindAddress) ? getWorker().getBindAddressTable().get(((InetSocketAddress) destination).getAddress()) : null;
+            final InetSocketAddress configuredAddress = getAnyInetAddress().equals(bindAddress) ? getWorker().getBindAddressTable().get(((InetSocketAddress) destination).getAddress()) : null;
             bindAddress = configuredAddress != null ? configuredAddress : bindAddress;
             return openTcpStreamConnection((InetSocketAddress) bindAddress, (InetSocketAddress) destination, openListener, bindListener, optionMap);
         } else if (destination instanceof LocalSocketAddress) {
